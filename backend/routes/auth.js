@@ -46,3 +46,62 @@ router.post('/register', async (req, res) => {
         user: newUser.rows[0]
     })
 })
+
+// login 
+
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ message: "Please fill in all fieldls" });
+    }
+
+    const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (user.rows.length === 0) {
+        return res.status(400).json({
+            message: "Invalid Credentials"
+        })
+    }
+
+    const userData = user.rows[0];
+
+    const isMatch = await bcrypt.compare(password, userData.password);
+
+    if (!isMatch) {
+        return res.status(400).json({
+            message: "Invalid Credenttials"
+        })
+    }
+
+    const token = generateToken(userData.id);
+
+    res.cookie('token', token, cookieOptions);
+
+    res.json({
+        user: {
+            id: userData.id,
+            username: userData.username,
+            email: userData.email
+        }
+    })
+})
+
+
+// me 
+
+router.get('/me', async (req, res) => {
+    res.json(
+        req.user
+    )
+    // return info of the logged user 
+
+})
+
+// logout 
+
+router.post('/logout', (req, res) => {
+    res.cookie('token', '', { ...cookieOptions, maxAge: 1 });
+    res.json({ message: "Logged out successfully" })
+})
+
+export default router;

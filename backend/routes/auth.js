@@ -1,14 +1,15 @@
 import express from 'express';
-import bcrypt from 'bycrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
+import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
 const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    someSite: 'Strict',
+    sameSite: 'Strict',
     maxAge: 30 * 24 * 60 * 60 * 1000
 }
 
@@ -19,9 +20,9 @@ const generateToken = (id) => {
 }
 
 router.post('/register', async (req, res) => {
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!username || !email || !password) {
+    if (!name || !email || !password) {
         return res.status(400).json({ message: "Please fill in all fields" });
     }
 
@@ -34,8 +35,8 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await pool.query(
-        'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, name, email',
-        [username, email, hashedPassword]
+        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email',
+        [name, email, hashedPassword]
     );
 
     const token = generateToken(newUser.rows[0].id);
@@ -80,7 +81,7 @@ router.post('/login', async (req, res) => {
     res.json({
         user: {
             id: userData.id,
-            username: userData.username,
+            name: userData.name,
             email: userData.email
         }
     })
@@ -89,7 +90,7 @@ router.post('/login', async (req, res) => {
 
 // me 
 
-router.get('/me', async (req, res) => {
+router.get('/me', protect, async (req, res) => {
     res.json(
         req.user
     )
@@ -103,5 +104,7 @@ router.post('/logout', (req, res) => {
     res.cookie('token', '', { ...cookieOptions, maxAge: 1 });
     res.json({ message: "Logged out successfully" })
 })
+
+console.log("REGISTER HIT");
 
 export default router;

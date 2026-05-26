@@ -18,6 +18,7 @@ export const Login = ({ setUser }) => {
             setUser(res.data);
             navigate("/");
 
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             setError("Invalid email or password");
         }

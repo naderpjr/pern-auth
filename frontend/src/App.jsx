@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import { Login } from "./pages/Login";
-import Register from "./pages/Register";
+import { Register } from "./pages/Register";
 import axios from 'axios';
 
 axios.defaults.withCredentials = true;
@@ -40,7 +40,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<Register setUser={setUser} />} />
       </Routes>
     </Router>
   )

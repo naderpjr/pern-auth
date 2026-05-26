@@ -1,23 +1,45 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import { Login } from "./pages/Login";
 import Register from "./pages/Register";
+import axios from 'axios';
+
+axios.defaults.withCredentials = true;
 
 function App() {
 
   const [user, setUser] = useState(null);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/auth/me")
+        setUser(res.data);
+      } catch (error) {
+        setUser(null);
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUser();
+  }, [])
+
+  if (loading) {
+    console.log("Loading user data...");
+    return <div>Loading...</div>;
+  }
 
   return (
     <Router>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login setUser={setUser} />} />
         <Route path="/register" element={<Register />} />
       </Routes>
     </Router>

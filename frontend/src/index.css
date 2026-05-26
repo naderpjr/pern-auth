@@ -1,0 +1,41 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+input {
+    width: 100%;
+    border: 1px solid #ccc;
+    outline: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    padding: 20px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    font-size: 20px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.text-error {
+    color: red;
+    font-size: 14px;
+    margin: 10px 0;
+}

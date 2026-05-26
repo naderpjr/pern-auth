@@ -19,7 +19,7 @@ export const Register = ({ setUser }) => {
             setUser(res.data);
             navigate("/");
 
-
+            // eslint-disable-next-line no-unused-vars
         } catch (error) {
             setError("REgistertion Failed");
         }
